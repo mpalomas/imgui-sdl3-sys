@@ -4,7 +4,8 @@
 // This is a Rust translation of the C++ example from imgui/examples/example_sdl3_sdlgpu3
 
 use imgui_sdl3_sys::{self, sdl3, sdlgpu3};
-use sdl3_sys::everything::*;
+// Use the re-exported sdl3_sys from imgui_sdl3_sys for version consistency
+use imgui_sdl3_sys::sdl3_sys::everything::*;
 use std::ffi::CString;
 use std::ptr;
 

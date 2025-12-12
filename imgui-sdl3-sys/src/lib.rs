@@ -4,6 +4,10 @@
 mod generated;
 pub use generated::*;
 
+// Re-export sdl3-sys so users don't need to add it as a separate dependency
+// This ensures version compatibility between imgui-sdl3-sys and user code
+pub use sdl3_sys;
+
 #[cfg(test)]
 mod tests {
     use super::*;
