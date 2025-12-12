@@ -21,6 +21,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                 );
             } else if cfg!(feature = "link-static") {
                 config.define("BUILD_SHARED_LIBS", "OFF");
+            } else {
+                // Build shared library
+                config.define("BUILD_SHARED_LIBS", "ON");
             }
 
             config.define("SDLTTF_SAMPLES", "OFF");

@@ -16,13 +16,13 @@ autoexamples = false
 default = ["build-from-source", "link-static"]
 
 # Build and link imgui from source instead of linking a pre-existing library
-build-from-source = ["dep:cmake", "dep:rpkg-config", "dep:imgui-src", "dep:bindgen"]
+build-from-source = ["dep:cmake", "dep:rpkg-config", "dep:imgui-src", "dep:bindgen", "sdl3-sys/build-from-source"]
 
 # Build and link a static imgui library from source
-build-from-source-static = ["build-from-source", "link-static"]
+build-from-source-static = ["build-from-source", "link-static", "sdl3-sys/link-static"]
 
 # Link imgui as a static library. The default is to link a shared/dynamic library.
-link-static = []
+link-static = ["sdl3-sys/link-static"]
 
 # Link imgui as an Apple framework. The link-static feature has no effect if this is enabled.
 link-framework = []
@@ -50,7 +50,7 @@ only-metadata = ["metadata", "no-link"]
 nightly = []
 
 [dependencies]
-sdl3-sys = { version = "0.6.0-pre-1", features = ["build-from-source-static"] }
+sdl3-sys = { version = "0.6.0-pre-1" }
 
 [build-dependencies.cmake]
 version = "0.1"
