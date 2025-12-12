@@ -1,0 +1,11 @@
+package_name: imgui
+lib_name: imgui
+lib_rev_name: imgui
+lib_min_version: 1.0.0
+lib_dir: imgui
+include_dir: include/dcimgui
+version_header: imgui.h
+headers_prefix: Im
+sym_prefix: Im
+define_prefix: IMGUI_
+hint_prop_prefix: IMGUI_

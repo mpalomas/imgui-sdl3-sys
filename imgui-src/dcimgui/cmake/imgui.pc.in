@@ -1,0 +1,13 @@
+prefix=@SDL_PKGCONFIG_PREFIX@
+exec_prefix=${prefix}
+libdir=@LIBDIR_FOR_PKG_CONFIG@
+includedir=@INCLUDEDIR_FOR_PKG_CONFIG@
+
+Name: imgui
+Description: ttf library for Simple DirectMedia Layer with FreeType 2 support
+Version: @PROJECT_VERSION@
+Requires: sdl3 >= @SDL_REQUIRED_VERSION@
+Libs: -L${libdir} -limgui
+Requires.private: @PC_REQUIRES@
+Libs.private: @PC_LIBS@
+Cflags: -I${includedir}

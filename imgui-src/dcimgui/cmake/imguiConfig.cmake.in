@@ -1,0 +1,69 @@
+# imgui cmake project-config input for CMakeLists.txt script
+
+include(FeatureSummary)
+set_package_properties(imgui PROPERTIES
+    URL "https://www.libsdl.org/projects/SDL_ttf/"
+    DESCRIPTION "Support for TrueType (.ttf) font files with Simple Directmedia Layer"
+)
+
+set(imgui_FOUND ON)
+
+set(IMGUI_VENDORED  @IMGUI_VENDORED@)
+set(IMGUI_SDL3_REQUIRED_VERSION        @SDL_REQUIRED_VERSION@)
+
+set(imgui_imgui-shared_FOUND FALSE)
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/imgui-shared-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/imgui-shared-targets.cmake")
+    set(imgui_imgui-shared_FOUND TRUE)
+endif()
+
+set(imgui_imgui-static_FOUND FALSE)
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/imgui-static-targets.cmake")
+    if(IMGUI_VENDORED)
+        if(NOT MSVC)
+            find_package(Threads)
+        endif()
+        include(CheckLanguage)
+        check_language(CXX)
+        if(NOT CMAKE_CXX_COMPILER AND NOT _imgui_nowarning)
+            message(WARNING "CXX language not enabled. Linking to imgui::imgui-static might fail.")
+        endif()
+    else()
+        set(_sdl_cmake_module_path "${CMAKE_MODULE_PATH}")
+        list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+        include(CMakeFindDependencyMacro)
+        include(PkgConfigHelper)
+
+        set(CMAKE_MODULE_PATH "${_sdl_cmake_module_path}")
+        unset(_sdl_cmake_module_path)
+    endif()
+
+    include("${CMAKE_CURRENT_LIST_DIR}/imgui-static-targets.cmake")
+    set(imgui_imgui-static_FOUND TRUE)
+endif()
+
+function(_sdl_create_target_alias_compat NEW_TARGET TARGET)
+    if(CMAKE_VERSION VERSION_LESS "3.18")
+        # Aliasing local targets is not supported on CMake < 3.18, so make it global.
+        add_library(${NEW_TARGET} INTERFACE IMPORTED)
+        set_target_properties(${NEW_TARGET} PROPERTIES INTERFACE_LINK_LIBRARIES "${TARGET}")
+    else()
+        add_library(${NEW_TARGET} ALIAS ${TARGET})
+    endif()
+endfunction()
+
+# Make sure imgui::imgui always exists
+if(NOT TARGET imgui::imgui)
+    if(TARGET imgui::imgui-shared)
+        _sdl_create_target_alias_compat(imgui::imgui imgui::imgui-shared)
+    elseif(TARGET imgui::imgui-static)
+        _sdl_create_target_alias_compat(imgui::imgui imgui::imgui-static)
+    endif()
+endif()
+
+if(NOT imgui_COMPONENTS AND NOT TARGET imgui::imgui-shared AND NOT TARGET imgui::imgui-static)
+    set(imgui_FOUND FALSE)
+endif()
+@PACKAGE_INIT@
+check_required_components(imgui)

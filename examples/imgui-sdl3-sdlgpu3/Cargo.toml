@@ -1,0 +1,15 @@
+[package]
+name = "imgui-sdl3-sdlgpu3"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+sdl3-sys = { version = "0.6.0-pre-1", features = ["build-from-source-static"] }
+
+[dependencies.imgui-sdl3-sys]
+path = "../../imgui-sdl3-sys"
+features = ["build-from-source-static"]
+
+[dependencies.sdl3-main]
+version = "0.6.0-pre-1"

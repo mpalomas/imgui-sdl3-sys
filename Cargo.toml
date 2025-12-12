@@ -1,0 +1,8 @@
+[workspace]
+resolver = "3"
+members = [
+    "imgui-src",
+    "imgui-sdl3-sys",
+    "examples/imgui-sdl3-sdlgpu3",
+]
+default-members = ["imgui-sdl3-sys"]

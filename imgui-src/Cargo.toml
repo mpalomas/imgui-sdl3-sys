@@ -1,0 +1,10 @@
+[package]
+name = "imgui-src"
+version = "0.1.0+1.92.5"
+edition = "2021"
+authors = ["ocornut", "floooh", "mpalomas"]
+license = "Zlib"
+description = "Source code of the Dear ImGui C binding library"
+repository = "https://github.com/mpalomas/imgui-sdl3-sys"
+keywords = ["sdl", "imgui"]
+categories = ["no-std"]
