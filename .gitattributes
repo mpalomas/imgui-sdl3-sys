@@ -1,3 +1,4 @@
+imgui-src/dcimgui/* linguist-vendored
 *.h linguist-vendored
 *.cpp linguist-vendored
 *.json linguist-vendored
