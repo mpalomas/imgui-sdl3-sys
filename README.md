@@ -2,7 +2,7 @@
 
 What is this? Another set of low level, unsafe Dear ImGui bindings for Rus, focused on SDL3 integration.
 
-Should your use this? Probably no. This is mostly for my personal usage.
+Should your use this? Probably no. This is mostly for my personal usage. Many things can, and will change and break you. Take it as a reference.
 
 Then, why?
 - There are several ImGui bindings crates, but unmaintained, or lacking what I need
