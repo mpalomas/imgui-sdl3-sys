@@ -16,7 +16,7 @@ autoexamples = false
 default = ["build-from-source", "link-static"]
 
 # Build and link imgui from source instead of linking a pre-existing library
-build-from-source = ["dep:cmake", "dep:rpkg-config", "dep:imgui-src", "dep:bindgen", "sdl3-sys/build-from-source"]
+build-from-source = ["dep:cmake", "dep:rpkg-config", "dep:imgui-src", "dep:bindgen", "sdl3-sys/build-from-source", "sdl3-sys/sdl-lean-and-mean"]
 
 # Build and link a static imgui library from source
 build-from-source-static = ["build-from-source", "link-static", "sdl3-sys/link-static"]
