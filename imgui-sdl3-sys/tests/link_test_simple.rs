@@ -3,7 +3,7 @@
 //! This test verifies that core ImGui functions link correctly
 //! without dealing with complex overloads and variadic functions.
 
-use imgui_sys::*;
+use imgui_sdl3_sys::*;
 use core::ptr;
 
 /// Test core functionality links correctly
