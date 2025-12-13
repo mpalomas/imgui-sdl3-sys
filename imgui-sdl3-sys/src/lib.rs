@@ -1,8 +1,17 @@
 #![no_std]
 #![cfg_attr(all(feature = "nightly", doc), feature(doc_cfg))]
 
-mod generated;
-pub use generated::*;
+// Generated imgui core bindings
+#[allow(unused_imports)]
+use core::*;
+
+#[path = "bindings/imgui.rs"]
+mod imgui_bindings;
+pub use imgui_bindings::*;
+
+// Backend modules that wrap the generated backend bindings
+pub mod sdl3;
+pub mod sdlgpu3;
 
 // Re-export sdl3-sys so users don't need to add it as a separate dependency
 // This ensures version compatibility between imgui-sdl3-sys and user code
@@ -15,8 +24,8 @@ mod tests {
     #[test]
     fn test_sdl3_backend_functions_exist() {
         // Verify that SDL3 backend functions are available
-        let _ = sdl3::ImGui_ImplSDL3_Shutdown as unsafe extern "C" fn();
-        let _ = sdl3::ImGui_ImplSDL3_NewFrame as unsafe extern "C" fn();
+        let _ = sdl3::cImGui_ImplSDL3_Shutdown as unsafe extern "C" fn();
+        let _ = sdl3::cImGui_ImplSDL3_NewFrame as unsafe extern "C" fn();
     }
 
     #[test]

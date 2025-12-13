@@ -174,19 +174,19 @@ fn generate_bindings() -> Result<(), Box<dyn Error>> {
     let sdlgpu3_bindings = sdlgpu3_builder.generate()?;
 
     let manifest_dir = env::var("CARGO_MANIFEST_DIR")?;
-    let generated_dir = PathBuf::from(manifest_dir).join("src/generated");
-    std::fs::create_dir_all(&generated_dir)?;
+    let bindings_dir = PathBuf::from(manifest_dir).join("src/bindings");
+    std::fs::create_dir_all(&bindings_dir)?;
 
     // Write main imgui bindings
-    let output_path = generated_dir.join("imgui.rs");
+    let output_path = bindings_dir.join("imgui.rs");
     bindings.write_to_file(&output_path)?;
 
     // Write SDL3 backend bindings
-    let sdl3_output_path = generated_dir.join("sdl3_backend.rs");
+    let sdl3_output_path = bindings_dir.join("sdl3_backend.rs");
     sdl3_bindings.write_to_file(&sdl3_output_path)?;
 
     // Write SDL3 GPU backend bindings
-    let sdlgpu3_output_path = generated_dir.join("sdlgpu3_backend.rs");
+    let sdlgpu3_output_path = bindings_dir.join("sdlgpu3_backend.rs");
     sdlgpu3_bindings.write_to_file(&sdlgpu3_output_path)?;
 
     // Post-process: Add missing opaque type definitions
@@ -237,66 +237,6 @@ fn generate_bindings() -> Result<(), Box<dyn Error>> {
     }
 
     std::fs::write(&output_path, result)?;
-
-    // Create mod.rs that includes all files
-    let mod_content = r#"// Auto-generated bindings for Dear ImGui and SDL3 backends
-
-#[allow(unused_imports)]
-use core::*;
-
-mod imgui;
-pub use imgui::*;
-
-pub mod sdl3;
-pub mod sdlgpu3;
-"#;
-    let mod_rs_path = generated_dir.join("mod.rs");
-    std::fs::write(&mod_rs_path, mod_content)?;
-
-    // Create sdl3/mod.rs that re-exports SDL3 types from sdl3-sys
-    let sdl3_mod_dir = generated_dir.join("sdl3");
-    std::fs::create_dir_all(&sdl3_mod_dir)?;
-    let sdl3_mod_content = r#"// SDL3 backend bindings
-
-// Re-export SDL3 types from sdl3-sys for convenience
-// Users can work with the same types across imgui and SDL3
-pub use sdl3_sys::everything::{SDL_Window, SDL_Renderer, SDL_Gamepad, SDL_Event};
-
-#[path = "../sdl3_backend.rs"]
-mod backend;
-pub use backend::*;
-"#;
-    let sdl3_mod_rs = sdl3_mod_dir.join("mod.rs");
-    std::fs::write(&sdl3_mod_rs, sdl3_mod_content)?;
-
-    // Create sdlgpu3/mod.rs that re-exports SDL3 GPU types from sdl3-sys
-    let sdlgpu3_mod_dir = generated_dir.join("sdlgpu3");
-    std::fs::create_dir_all(&sdlgpu3_mod_dir)?;
-    let sdlgpu3_mod_content = r#"// SDL3 GPU backend bindings
-
-// Re-export SDL3 GPU types from sdl3-sys for convenience
-// Users can work with the same types across imgui and SDL3 GPU
-pub use sdl3_sys::everything::{
-    SDL_GPUDevice,
-    SDL_GPUTextureFormat,
-    SDL_GPUSampleCount,
-    SDL_GPUSwapchainComposition,
-    SDL_GPUPresentMode,
-    SDL_GPUCommandBuffer,
-    SDL_GPURenderPass,
-    SDL_GPUGraphicsPipeline,
-    SDL_GPUSampler,
-};
-
-// Re-export ImGui types needed by the backend
-pub use crate::{ImDrawData, ImTextureData};
-
-#[path = "../sdlgpu3_backend.rs"]
-mod backend;
-pub use backend::*;
-"#;
-    let sdlgpu3_mod_rs = sdlgpu3_mod_dir.join("mod.rs");
-    std::fs::write(&sdlgpu3_mod_rs, sdlgpu3_mod_content)?;
 
     Ok(())
 }

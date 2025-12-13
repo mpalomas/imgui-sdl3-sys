@@ -17,6 +17,6 @@ pub use sdl3_sys::everything::{
 // Re-export ImGui types needed by the backend
 pub use crate::{ImDrawData, ImTextureData};
 
-#[path = "../sdlgpu3_backend.rs"]
+#[path = "bindings/sdlgpu3_backend.rs"]
 mod backend;
 pub use backend::*;
