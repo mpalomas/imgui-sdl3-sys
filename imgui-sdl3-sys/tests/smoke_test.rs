@@ -5,7 +5,7 @@
 //! 2. Functions can be called and linked successfully
 //! 3. Basic ImGui functionality works
 
-use imgui_sdl3_sys::*;
+use imgui_sdl3_sys::imgui_sys::*;
 
 #[test]
 fn test_version_constants() {

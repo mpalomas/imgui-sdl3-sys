@@ -3,7 +3,7 @@
 //! These tests verify that the bindings compile and link correctly
 //! without actually executing any ImGui code.
 
-use imgui_sdl3_sys::*;
+use imgui_sdl3_sys::imgui_sys::*;
 
 /// Test that all major function signatures are accessible
 #[test]

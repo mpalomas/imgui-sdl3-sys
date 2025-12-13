@@ -7,8 +7,9 @@ Should your use this? Probably no. This is mostly for my personal usage. Many th
 Then, why?
 - There are several ImGui bindings crates, but unmaintained, or lacking what I need
 - Specifically, I need the SDL3 backend, and SDL GPU. Nothing more
+- I don´t want to depend on the high level SDL3 crate
 - It's easier for me to control/bump ImGui version
-- I simply re-export the whole SDL3, so I don´t need a specific dependency to sdl3-sys in consuming code
+- I simply re-export the whole SDL3 (sys), so I don´t need a specific dependency to sdl3-sys in consuming code
 
 Non-goals:
 - High level, safe, idiomatic bindings: I don´t care much, for my usage unsafe and conversions are acceptable

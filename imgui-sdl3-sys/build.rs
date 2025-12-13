@@ -98,6 +98,7 @@ fn generate_bindings() -> Result<(), Box<dyn Error>> {
         .raw_line("#![allow(dead_code)]")
         .raw_line("#![allow(clippy::all)]")
         .raw_line("#![allow(unsafe_op_in_unsafe_fn)]")
+        .raw_line("#![allow(unnecessary_transmutes)]")
         .generate()?;
 
     eprintln!("generate_bindings: Generating SDL3 backend bindings from C wrapper");
@@ -120,6 +121,7 @@ fn generate_bindings() -> Result<(), Box<dyn Error>> {
         .raw_line("#![allow(non_snake_case)]")
         .raw_line("#![allow(dead_code)]")
         .raw_line("#![allow(clippy::all)]")
+        .raw_line("#![allow(unnecessary_transmutes)]")
         .raw_line("use super::*;")
         .generate()?;
 
@@ -164,6 +166,7 @@ fn generate_bindings() -> Result<(), Box<dyn Error>> {
         .raw_line("#![allow(dead_code)]")
         .raw_line("#![allow(clippy::all)]")
         .raw_line("#![allow(unsafe_op_in_unsafe_fn)]")
+        .raw_line("#![allow(unnecessary_transmutes)]")
         .raw_line("use super::*;");
 
     // Add SDL3 include directory if available

@@ -1,17 +1,8 @@
 #![no_std]
 #![cfg_attr(all(feature = "nightly", doc), feature(doc_cfg))]
 
-// Generated imgui core bindings
-#[allow(unused_imports)]
-use core::*;
-
-#[path = "bindings/imgui.rs"]
-mod imgui_bindings;
-pub use imgui_bindings::*;
-
-// Backend modules that wrap the generated backend bindings
-pub mod sdl3;
-pub mod sdlgpu3;
+// ImGui bindings module - contains core ImGui and all backends
+pub mod imgui_sys;
 
 // Re-export sdl3-sys so users don't need to add it as a separate dependency
 // This ensures version compatibility between imgui-sdl3-sys and user code
@@ -24,8 +15,8 @@ mod tests {
     #[test]
     fn test_sdl3_backend_functions_exist() {
         // Verify that SDL3 backend functions are available
-        let _ = sdl3::cImGui_ImplSDL3_Shutdown as unsafe extern "C" fn();
-        let _ = sdl3::cImGui_ImplSDL3_NewFrame as unsafe extern "C" fn();
+        let _ = imgui_sys::sdl3::cImGui_ImplSDL3_Shutdown as unsafe extern "C" fn();
+        let _ = imgui_sys::sdl3::cImGui_ImplSDL3_NewFrame as unsafe extern "C" fn();
     }
 
     #[test]
@@ -34,7 +25,7 @@ mod tests {
         // This is a compile-time check - if types are compatible, this will compile
 
         use sdl3_sys::everything::SDL_Window as SdlWindow;
-        use sdl3::SDL_Window as ImGuiWindow;
+        use imgui_sys::sdl3::SDL_Window as ImGuiWindow;
 
         // These should be the same type
         let _: fn(*mut SdlWindow) = |w: *mut ImGuiWindow| {
