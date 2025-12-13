@@ -8,7 +8,7 @@ license = "MIT"
 description = "Low level Rust bindings for Dear ImGui (dcimgui) with SDL3 backend"
 repository = "https://github.com/mpalomas/imgui-sdl3-sys"
 keywords = ["sdl", "imgui", ]
-categories = ["external-ffi-bindings", "no-std"]
+categories = ["external-ffi-bindings"]
 links = "imgui"
 autoexamples = false
 
@@ -33,11 +33,6 @@ no-link = []
 # Use pkg-config to get link flags for imgui. Only used when not building from source.
 # This has no effect if the link-framework feature is enabled.
 use-pkg-config = ["dep:pkg-config"]
-
-# Use vcpkg to get link flags for imgui. Only used when not building from source.
-# The link-static feature has no effect when using vcpkg.
-# This has no effect if the link-framework feature is enabled.
-use-vcpkg = ["dep:vcpkg"]
 
 # Implement the Debug trait for applicable types
 # debug-impls = ["sdl3-sys/debug-impls"]
@@ -65,12 +60,7 @@ version = "0.1.2"
 optional = true
 
 [build-dependencies.imgui-src]
-# version = "3.2.2"
 path = "../imgui-src"
-optional = true
-
-[build-dependencies.vcpkg]
-version = "0.2"
 optional = true
 
 [build-dependencies.bindgen]
