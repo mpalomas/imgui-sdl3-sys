@@ -38,9 +38,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     })?;
 
     // ImGui is C++ code, so we need to link the C++ standard library
+    // On Windows MSVC, the C++ standard library is linked automatically by the toolchain
     #[cfg(target_vendor = "apple")]
     println!("cargo::rustc-link-lib=c++");
-    #[cfg(not(target_vendor = "apple"))]
+    #[cfg(all(not(target_vendor = "apple"), not(target_env = "msvc")))]
     println!("cargo::rustc-link-lib=stdc++");
 
     #[cfg(feature = "build-from-source")]

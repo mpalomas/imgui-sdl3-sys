@@ -726,6 +726,33 @@ Initially blocked `ImDrawData` and `ImTexture.*` types, but the GPU backend func
 **Solution:**
 Removed `ImDrawData` and `ImTexture.*` from the blocklist. Only block types that are truly not needed and would cause conflicts.
 
+#### Issue 13: Windows MSVC C++ Standard Library Linking
+
+**Error:**
+```
+LINK : fatal error LNK1181: cannot open input file 'stdc++.lib'
+```
+
+**Root Cause:**
+The build script was unconditionally linking `stdc++` (the GNU C++ standard library) on all non-Apple platforms. However, on Windows MSVC, the C++ standard library is automatically linked by the MSVC toolchain and there is no `stdc++.lib` file. MSVC uses a different C++ standard library implementation that's implicitly linked.
+
+**Solution:**
+Modified the C++ standard library linking logic in [build.rs:40-45](../build.rs#L40-L45) to exclude Windows MSVC:
+
+```rust
+// ImGui is C++ code, so we need to link the C++ standard library
+// On Windows MSVC, the C++ standard library is linked automatically by the toolchain
+#[cfg(target_vendor = "apple")]
+println!("cargo::rustc-link-lib=c++");
+#[cfg(all(not(target_vendor = "apple"), not(target_env = "msvc")))]
+println!("cargo::rustc-link-lib=stdc++");
+```
+
+This ensures:
+- **macOS**: Links `libc++` (Clang's C++ standard library)
+- **Linux/Unix**: Links `libstdc++` (GNU C++ standard library)
+- **Windows MSVC**: No explicit linking (uses MSVC's automatic C++ standard library linking)
+
 ### Testing
 
 To verify the bindings and type compatibility:
@@ -812,8 +839,9 @@ The build system has been designed and tested to work across multiple platforms:
    - The build system automatically handles these differences
 
 3. **C++ Standard Library**:
-   - macOS links against `libc++`
-   - Other platforms link against `libstdc++`
+   - macOS links against `libc++` (Clang's C++ stdlib)
+   - Linux/Unix link against `libstdc++` (GNU C++ stdlib)
+   - Windows MSVC uses automatic C++ stdlib linking (no explicit link flag needed)
 
 ## References
 
