@@ -129,14 +129,63 @@ fn generate_bindings() -> Result<(), Box<dyn Error>> {
     // C wrapper is now built by CMake in imgui-src, just generate bindings from the header
 
     // Get SDL3 include directory for bindgen
-    let sdl3_include_dir = if let Some(sdl3_cmake_dir) = env::var_os("DEP_SDL3_CMAKE_DIR") {
-        PathBuf::from(sdl3_cmake_dir)
-            .parent()  // Remove SDL3 -> .../lib/cmake
-            .and_then(|p| p.parent())  // Remove cmake -> .../lib
-            .and_then(|p| p.parent())  // Remove lib -> .../out
-            .map(|p| p.join("include"))  // Add include -> .../out/include
-    } else {
-        None
+    // Try multiple methods to find SDL3 headers for maximum cross-platform compatibility
+    let sdl3_include_dir = {
+        // Method 1: Check if DEP_SDL3_INCLUDE is set (some sdl3-sys versions might provide this)
+        if let Some(include_path) = env::var_os("DEP_SDL3_INCLUDE") {
+            let path = PathBuf::from(include_path);
+            if path.join("SDL3").join("SDL_gpu.h").exists() {
+                eprintln!("Found SDL3 headers via DEP_SDL3_INCLUDE: {}", path.display());
+                Some(path)
+            } else if path.join("SDL_gpu.h").exists() {
+                eprintln!("Found SDL3 headers via DEP_SDL3_INCLUDE (parent): {}", path.parent().unwrap().display());
+                path.parent().map(|p| p.to_path_buf())
+            } else {
+                None
+            }
+        } else if let Some(sdl3_cmake_dir) = env::var_os("DEP_SDL3_CMAKE_DIR") {
+            // Method 2: Search relative to cmake directory
+            let cmake_path = PathBuf::from(&sdl3_cmake_dir);
+            eprintln!("DEP_SDL3_CMAKE_DIR: {}", cmake_path.display());
+
+            // Search for SDL3 headers by walking up the directory tree and checking various locations
+            // Common patterns:
+            // - Windows/build-from-source: <out>/cmake -> <out>/include/SDL3/
+            // - Linux/macOS build-from-source: <out>/lib/cmake/SDL3 -> <out>/include/SDL3/
+            // - System installs: /usr/lib/cmake/SDL3 -> /usr/include/SDL3/
+
+            fn find_sdl3_headers(start_path: &std::path::Path) -> Option<PathBuf> {
+                let mut current = start_path;
+
+                // Try up to 4 levels up from the cmake directory
+                for level in 0..4 {
+                    eprintln!("  Searching level {}: {}", level, current.display());
+
+                    // Check <current>/include/SDL3/SDL_gpu.h
+                    let candidate = current.join("include");
+                    if candidate.join("SDL3").join("SDL_gpu.h").exists() {
+                        eprintln!("Found SDL3 headers at: {}", candidate.display());
+                        return Some(candidate);
+                    }
+
+                    // Check <current>/SDL3/SDL_gpu.h (for some system installs)
+                    if current.join("SDL3").join("SDL_gpu.h").exists() {
+                        eprintln!("Found SDL3 headers at: {}", current.display());
+                        return Some(current.to_path_buf());
+                    }
+
+                    // Move up one directory
+                    current = current.parent()?;
+                }
+
+                None
+            }
+
+            find_sdl3_headers(&cmake_path)
+        } else {
+            eprintln!("Neither DEP_SDL3_INCLUDE nor DEP_SDL3_CMAKE_DIR is set");
+            None
+        }
     };
 
     let sdlgpu3_wrapper_header = backends_dir.join("cimgui_impl_sdlgpu3.h");
@@ -171,7 +220,11 @@ fn generate_bindings() -> Result<(), Box<dyn Error>> {
 
     // Add SDL3 include directory if available
     if let Some(ref sdl3_inc) = sdl3_include_dir {
+        eprintln!("Adding SDL3 include directory to bindgen: {}", sdl3_inc.display());
         sdlgpu3_builder = sdlgpu3_builder.clang_arg(format!("-I{}", sdl3_inc.display()));
+    } else {
+        eprintln!("WARNING: SDL3 include directory not found. SDL GPU backend bindings may fail.");
+        eprintln!("This usually means SDL3 headers are not installed or DEP_SDL3_CMAKE_DIR is not set correctly.");
     }
 
     let sdlgpu3_bindings = sdlgpu3_builder.generate()?;

@@ -366,7 +366,14 @@ fn build(
                 link_flags.search_lib(format!("{}/lib", out_dir.display()));
                 link_flags.search_lib(format!("{}/lib64", out_dir.display()));
                 match link_kind {
-                    LinkKind::Static => link_flags.link_static_lib(lib_name),
+                    LinkKind::Static => {
+                        // MSVC appends -static suffix to static library names
+                        if env::var("CARGO_CFG_TARGET_ENV").unwrap() == "msvc" {
+                            link_flags.link_static_lib(format!("{lib_name}-static"));
+                        } else {
+                            link_flags.link_static_lib(lib_name);
+                        }
+                    }
                     LinkKind::Default => link_flags.link_lib(lib_name),
                 }
             }
