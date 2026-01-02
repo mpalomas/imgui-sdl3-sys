@@ -1,6 +1,6 @@
 [package]
 name = "imgui-sdl3-sys"
-version = "0.1.0-pre-1"
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
 authors = ["Michaël Palomas <mpalomas@proton.me>"]
@@ -45,7 +45,7 @@ only-metadata = ["metadata", "no-link"]
 nightly = []
 
 [dependencies]
-sdl3-sys = { version = "0.6.0-pre-1" }
+sdl3-sys = { version = "0.6.0" }
 
 [build-dependencies.cmake]
 version = "0.1"
